@@ -23,11 +23,15 @@ let eventEmitter=new event.EventEmitter()
 // let all=eventEmitter.eventNames()
 // console.log(all);
 
-eventEmitter.addListener('login',(name,add)=>{
-    console.log(`hello this is ${name} and i am login from ${add}`);
-})
+// eventEmitter.addListener('login',(name,add)=>{
+//     console.log(`hello this is ${name} and i am login from ${add}`);
+// })
 
-eventEmitter.emit('login','manohar','kadapa')
+// eventEmitter.emit('login','manohar','kadapa')
 
-eventEmitter.removeAllListeners()
-console.log(eventEmitter.eventNames());
+// eventEmitter.removeAllListeners()
+// console.log(eventEmitter.eventNames());
+
+eventEmitter.setMaxListeners(50)
+let max=eventEmitter.getMaxListeners()
+console.log(max);
