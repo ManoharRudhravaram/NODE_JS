@@ -1,76 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
+
 <body>
     <div class="container">
-
         <div class="row d-flex justify-content-center">
             <h1 class="text-center m-3">Todo</h1>
-            <div class="col-md d-flex gap-5 justify-content-center">
-                <input type="text" class=" p-2" placeholder="enter text" id="text">
-                <button class=" btn btn-primary" id="submit">submit</button>
+            <div class="col">
+                <input type="text" placeholder="enter your data" id="text" />
+                <button id="submit" class="btn btn-primary"> add</button>
             </div>
+
         </div>
-        <hr/>
-        <div class=" d-flex justify-content-center" id="body">
-             <!-- //by js we are genrating the templagte -->
-        </div>
+        <hr />
+        <div class="row d-flex justify-content-center" id="body">
+            <!-- //by js we are genrating the templagte -->
         </div>
     </div>
     <script>
-        let submit=document.getElementById('submit')
-        let text=document.getElementById('text')
-        let edit=document.getElementById('edit')
-        let del=document.getElementById('delete')
-
-        submit.addEventListener('click',async()=>{
-            if(!text.value){
-                alert('required**')
+        let glbalData = []
+        let action = ''
+        let submit = document.getElementById('submit')
+        let text = document.getElementById('text')
+        submit.addEventListener('click', async () => {
+            if (!text.value) {
+                alert('required **')
             }
-            else{
-                try {
-                    let msg=text.value
-                    let metaObject={
-                        method:"POST",
-                        body:JSON.stringify(msg)
+            else {
+                if (!action) {
+                    try {
+
+                        let msg = text.value
+                        let metaObject = {
+                            method: "POST",
+                            body: JSON.stringify(msg)
+                        }
+                        let response = await fetch('http://localhost:8000', metaObject)
+                        let result = await response.json()
+                        text.value = ''
+                        print(result)
                     }
-                     let response= await fetch('http://localhost:8000',metaObject)
-                     let result= await response.json()
-                      print(result) 
-                } catch (error) {
-                    alert(error.message)
-                    return
+                    catch (err) {
+                        alert('somthing wrong')
+                        return
+                    }
                 }
+                else {
+                    try {
+                        let option = {
+                            method: "PUT",
+                            body: JSON.stringify({ ...action, text: text.value })
+                        }
+                        let response = await fetch('http://localhost:8000', option)
+                        let data = await response.json()
+                        print(data)
+                        submit.innerText = "ADD"
+                        text.value = ""
+                        action = ""
+                    }
+                    catch (err) {
+                        console.log(err)
+                        alert(err.message)
+                        submit.innerText = "ADD"
+                        text.value = ""
+                        action = ""
+                    }
+
+
+                }
+
             }
         })
-
-        function print(args){
-            let body=document.getElementById('body')
-            let str=''
-            args.map((item)=>{
-                str+=`<div class="col-md-3 m-2">
+        //this is handler for edit 
+        function editHandler(id) {
+            let findData = glbalData.find((item) => {
+                return item.id == id
+            })
+            text.value = findData.text
+            submit.innerText = "Update"
+            action = findData
+        }
+        //this is handler for printing the card
+        function print(args) {
+            glbalData = args
+            let body = document.getElementById('body')
+            let str = ''
+            args.map((item) => {
+                str += `    <div class="col-md-3 m-2">
                 <div class="card">
                     <div class="card-body bg-dark text-white">
                         <p>${item.text}</p>
                     </div>
-                    <div class="card-footer d-flex justify-content-evenly">
-                        <button id="edit" class="btn btn-primary">edit</button>
-                        <button id="delete" class="btn btn-danger">delete</button>
+                    <div class="card-footer">
+                        <button id="edit" onclick="editHandler(${item.id})" class="btn btn-primary">edit</button>
+                        <button id="delete" class="btn btn-danger" onclick="deleteHandler(${item.id})">delete</button>
                     </div>
                 </div>
-            </div>`
+            </div>  `
             })
-            body.innerHTML=str;
+            body.innerHTML = str
         }
-
-        del.addEventListener('click',async()=>{
-            
-        })
+        //this is for the delete handler
+        async function deleteHandler(id) {
+            let object = {
+                method: "DELETE",
+                body: JSON.stringify(id)
+            }
+            let response = await fetch('http://localhost:8000', object)
+            let result = await response.json()
+            if (result) {
+                print(result)
+                alert("data deleted successful")
+            }
+            else {
+                alert('somthing wrong while deleting')
+                return
+            }
+        }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
 </body>
+
 </html>
