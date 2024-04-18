@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <div class="container">
+    <div class="container-fluid">
         <div class="row d-flex justify-content-center">
             <h1 class="text-center m-3">Todo</h1>
             <div class="col">
@@ -36,7 +36,6 @@
             else {
                 if (!action) {
                     try {
-
                         let msg = text.value
                         let metaObject = {
                             method: "POST",
