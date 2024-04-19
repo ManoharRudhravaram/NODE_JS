@@ -4,3 +4,11 @@
     align-items: center;
     justify-content: space-evenly;
 }
+
+#form{
+    border-radius: 10px;
+}
+
+a:hover{
+    color: yellow;
+}

@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title>users page</title>
+    <link rel="stylesheet" href="./css/allUser.css">
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row border m-2 p-3">
+            <div class="col-md">
+                <nav class="navbar navbar-expand-lg navbar-light bg-primary">
+                    <div class="container-fluid">
+                        <a style="color:white" class="navbar-brand" href="/">EXPRESS JS</a>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                            aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarNav">
+                            <ul class="navbar-nav">
+                                <li class="nav-item">
+                                    <a style="color:white" class="nav-link active" aria-current="page" href="/">Home</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a style="color:white" class="nav-link" href="/about">About</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a style="color:white" class="nav-link" href="/contact">Contact</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a style="color:white" class="nav-link" href="/allData">All data</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        <div class="row m-3">
+            <div class="col d-flex justify-content-evenly">
+                <input type="text" placeholder="search..." id="search" />
+                <h4>total Users : <span id="total"></span></h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">id</th>
+                            <th scope="col">name</th>
+                            <th scope="col">email</th>
+                            <th scope="col" colspan="2">action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row" >
+            <div class="col-md d-flex align-items-center justify-content-center" id="body" >
+
+            </div>
+        </div>
+    </div>
+
+</body>
+<script>
+    let tbody = document.getElementById('tbody')
+    let total = document.getElementById('total')
+    let search = document.getElementById('search')
+    let body=document.getElementById('body')
+    let str='<div style="width:100%;border:1px solid;height:80vh;position:relative;top:-230px;background-color:rgba(0,0,0,0.6)" class="d-flex align-items-center justify-content-center"><div class=" m-5 d-flex align-items-center justify-content-center flex-column border p-5 bg-warning" style="width:30%"><input type="text" id="text" placeholder=" enter name" style="width:12rem"> <br><input type="email" id="email" style="width:12rem" placeholder=" enter email"> <br><buttom class="btn btn-primary" id="btn">submit</buttom></div></div>'
+    let email=document.getElementById("email")
+    let text=document.getElementById("text")
+    search.addEventListener('keyup', async () => {
+        if (search.value) {
+            let url = `http://localhost:8000/search?search=${search.value}`
+            let response = await fetch(url)
+            let { data, success } = await response.json()
+            print(data)
+        }
+        else {
+            console.log('fail')
+        }
+    })
+
+    function print(data) {
+        let str = ""
+        data.map((details) => {
+            str += `<tr>
+                    <th scope="row">${details.id}</th>
+                    <td>${details.text}</td>
+                    <td>${details.email}</td>
+                    <td><button class='btn btn-warning' id='edit' onclick="editHandler(${details.id})" >Edit</button></td>
+                    <td><button class='btn btn-danger' onclick="deleteHandler(${details.id})">Delete</button></td>
+                    </tr>`
+        })
+        tbody.innerHTML = str;
+        total.innerText = data.length;
+    }
+
+    async function editHandler(id){
+    body.innerHTML=str
+        let response=await fetch(`http://localhost:8000/single/${id}`,{method:"GET",headers:{"content-type":"application/json"}})
+        let {data}=await response.json()
+        email.value=data.email;
+        text.value=data.text;
+    }
+    async function deleteHandler(id){
+       let response=await fetch(`http://localhost:8000/delete/${id}`,{method:"DELETE",headers:{"content-type":"application/json"}})
+       let {data,success}=await response.json()
+       if(success){
+        print(data)
+       }
+    }
+
+    async function allUsersData() {
+        let response = await fetch('/users')
+        let { data,success } = await response.json()
+        if(success){
+            print(data)
+        }
+    }
+    allUsersData()
+</script>
+
+</html>

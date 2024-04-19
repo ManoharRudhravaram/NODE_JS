@@ -1,0 +1,25 @@
+table, th, td {
+    border: 2px solid black;
+    border-collapse: collapse;
+    padding: 20px;
+}
+
+.navbar{
+    color: white;
+}
+
+a:hover{
+  color: yellow;
+}
+
+h1{
+  text-align: center;
+}
+
+th,td{
+ text-align: center;
+}
+
+input{
+  width: 30%;
+}
