@@ -47,11 +47,20 @@
             <div class="col d-flex justify-content-evenly">
                 <input type="text" placeholder="search..." id="search" />
                 <h4>total Users : <span id="total"></span></h4>
+                <select id="select" style="width: 100px;">
+                    <option value="A_Z">A_Z</option>
+                    <option value="" disabled></option>
+                    <option value="Z_A">Z_A</option>
+                    <option value="" disabled></option>
+                    <option value="1_10">1_10</option>
+                    <option value="" disabled></option>
+                    <option value="10_1">10-1</option>
+                </select>
             </div>
         </div>
         <div class="row">
             <div class="col-md">
-                <table class="table">
+                <table class="table table-success table-striped">
                     <thead>
                         <tr>
                             <th scope="col">id</th>
@@ -79,7 +88,7 @@
     let total = document.getElementById('total')
     let search = document.getElementById('search')
     let body = document.getElementById('body')
-
+    let select=document.getElementById('select')
     search.addEventListener('keyup', async () => {
         if (search.value) {
             let url = `http://localhost:8000/search?search=${search.value}`
@@ -111,7 +120,7 @@
         let response = await fetch(`http://localhost:8000/single/${id}`, { method: "GET", headers: { "content-type": "application/json" } })
         let { data } = await response.json()
         let { email, text } = await data;
-        let str = `<div style="width:100%;border:1px solid;height:80vh;position:relative;top:-300px;background-color:rgba(0,0,0,0.6)" class="d-flex align-items-center justify-content-center"><i class="fa-solid fa-xmark" style="position:absolute;top:10px;right:10px;font-size:25px;color:white;cursor:pointer"></i><div class=" m-5 d-flex align-items-center justify-content-center flex-column border p-5 bg-warning" style="width:30%"><input type="text" id="text" placeholder=" enter name" style="width:12rem" value='${text}'> <br><input type="email" id="email" style="width:12rem" placeholder=" enter email" value='${email}'> <br><buttom class="btn btn-primary" id="btn" onclick="submitHandler(${id})">submit</buttom></div></div>`
+        let str = `<div style="width:100%;border:1px solid;height:90vh;position:relative;top:-410px;background-color:rgba(0,0,0,0.6)" class="d-flex align-items-center justify-content-center"><i class="fa-solid fa-xmark" style="position:absolute;top:10px;right:10px;font-size:25px;color:white;cursor:pointer"></i><div class=" m-5 d-flex align-items-center justify-content-center flex-column border p-5 bg-warning" style="width:30%"><input type="text" id="text" placeholder=" enter name" style="width:12rem" value='${text}' class="form-control"/> <br><input type="email" id="email" style="width:12rem" placeholder=" enter email" value='${email}' class="form-control"/> <br><buttom class="btn btn-primary" id="btn" onclick="submitHandler(${id})">submit</buttom></div></div>`
         body.innerHTML = str
         let cross=document.querySelector('i')
         cross.addEventListener('click',()=>{
@@ -159,6 +168,18 @@
         }
     }
     allUsersData()
-</script>
 
+    select.addEventListener('change',async()=>{
+        let sortValue=select.value;
+        let response=await fetch(`http://localhost:8000/sort`,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({sort:sortValue})})
+        let {data,success}=await response.json()
+        if(success){
+            print(data)
+        }
+    })
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+crossorigin="anonymous"></script>
 </html>

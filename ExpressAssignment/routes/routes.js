@@ -1,5 +1,5 @@
 let express=require('express')
-const { homeController, aboutController, contactController, userController, contactPostController, allDataController, searchController, deleteController, singleController, updateController } = require('../controller/assignmentController')
+const { homeController, aboutController, contactController, userController, contactPostController, allDataController, searchController, deleteController, singleController, updateController, sortController } = require('../controller/assignmentController')
 
 let route=express.Router()
 
@@ -13,4 +13,5 @@ route.get('/search',searchController)
 route.delete('/delete/:id',deleteController)
 route.get('/single/:id',singleController)
 route.put('/update/:id',updateController)
+route.post('/sort',sortController)
 module.exports=route

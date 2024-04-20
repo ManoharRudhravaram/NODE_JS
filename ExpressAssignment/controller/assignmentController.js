@@ -87,7 +87,7 @@ let deleteController = (req, res) => {
             throw new Error('something wrong while searching')
         }
         else {
-            let originalData=JSON.parse(data)
+            let originalData = JSON.parse(data)
             let deletedData = originalData.filter((item) => {
                 return item.id != id
             })
@@ -96,43 +96,43 @@ let deleteController = (req, res) => {
                     throw new Error('soemthing wrong while deleting')
                 }
                 else {
-                   res.send({data:deletedData,success:true,message:"user deleted successfully"})
+                    res.send({ data: deletedData, success: true, message: "user deleted successfully" })
                 }
             })
         }
     })
 }
 
-let singleController=(req,res)=>{
-    let {id}=req.params;
+let singleController = (req, res) => {
+    let { id } = req.params;
     let dbPath = path.join(__dirname, '../db/db.js')
-    fs.readFile(dbPath,'utf-8',(err,data)=>{
-        if(err){
+    fs.readFile(dbPath, 'utf-8', (err, data) => {
+        if (err) {
             throw new Error('something wrong while reading')
         }
-        else{
-            let orignalData=JSON.parse(data);
-            let singleData=orignalData.find((data)=>{
-                return data.id==id
+        else {
+            let orignalData = JSON.parse(data);
+            let singleData = orignalData.find((data) => {
+                return data.id == id
             })
-            res.send({data:singleData,success:true})
+            res.send({ data: singleData, success: true })
         }
     })
 }
 
-let updateController=(req,res)=>{
-    let {id}=req.params;
-    let {text,email}=req.body;
+let updateController = (req, res) => {
+    let { id } = req.params;
+    let { text, email } = req.body;
     let dbPath = path.join(__dirname, '../db/db.js')
-    fs.readFile(dbPath,"utf-8",(err,data)=>{
-        if(err){
+    fs.readFile(dbPath, "utf-8", (err, data) => {
+        if (err) {
             throw new Error('something wrong while reading')
         }
-        else{
-            let orignalData=JSON.parse(data);
-            let updatedData=orignalData.map((data)=>{
-                if(data.id==id){
-                    return {...data,text:text,email:email}
+        else {
+            let orignalData = JSON.parse(data);
+            let updatedData = orignalData.map((data) => {
+                if (data.id == id) {
+                    return { ...data, text: text, email: email }
                 }
                 return data
             })
@@ -141,11 +141,40 @@ let updateController=(req,res)=>{
                     throw new Error('soemthing wrong while deleting')
                 }
                 else {
-                   res.send({data:updatedData,success:true,message:"user updated sucessfully"})
+                    res.send({ data: updatedData, success: true, message: "user updated sucessfully" })
                 }
             })
         }
     })
 }
 
-module.exports = { homeController, aboutController, contactController, userController, contactPostController, allDataController, searchController, deleteController, singleController, updateController }
+let sortController = (req, res) => {
+    let { sort } = req.body;
+    let dbPath = path.join(__dirname, '../db/db.js')
+    fs.readFile(dbPath, 'utf-8', (err, data) => {
+        if (err) {
+            throw new Error('something wrong while sorting')
+        }
+        else {
+            let originalData = JSON.parse(data)
+            function sorting(a, b) {
+                if (sort == 'A_Z') {
+                    return a.text.toLowerCase().localeCompare(b.text.toLowerCase())
+                }
+                else if (sort == 'Z_A') {
+                    return b.text.toLowerCase().localeCompare(a.text.toLowerCase())
+                }
+                else if (sort == '1_10') {
+                    return a.id - b.id
+                }
+                else {
+                    return b.id - a.id
+                }
+            }
+            let sortdData = originalData.sort(sorting)
+            res.send({data:sortdData,success:true})
+        }
+    })
+}
+
+module.exports = { homeController, aboutController, contactController, userController, contactPostController, allDataController, searchController, deleteController, singleController, updateController, sortController }
