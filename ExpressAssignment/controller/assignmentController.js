@@ -96,7 +96,7 @@ let deleteController = (req, res) => {
                     throw new Error('soemthing wrong while deleting')
                 }
                 else {
-                   res.send({data:deletedData,success:true})
+                   res.send({data:deletedData,success:true,message:"user deleted successfully"})
                 }
             })
         }
@@ -105,7 +105,6 @@ let deleteController = (req, res) => {
 
 let singleController=(req,res)=>{
     let {id}=req.params;
-    console.log(id);
     let dbPath = path.join(__dirname, '../db/db.js')
     fs.readFile(dbPath,'utf-8',(err,data)=>{
         if(err){
@@ -121,4 +120,32 @@ let singleController=(req,res)=>{
     })
 }
 
-module.exports = { homeController, aboutController, contactController, userController, contactPostController, allDataController, searchController, deleteController, singleController }
+let updateController=(req,res)=>{
+    let {id}=req.params;
+    let {text,email}=req.body;
+    let dbPath = path.join(__dirname, '../db/db.js')
+    fs.readFile(dbPath,"utf-8",(err,data)=>{
+        if(err){
+            throw new Error('something wrong while reading')
+        }
+        else{
+            let orignalData=JSON.parse(data);
+            let updatedData=orignalData.map((data)=>{
+                if(data.id==id){
+                    return {...data,text:text,email:email}
+                }
+                return data
+            })
+            fs.writeFile(dbPath, JSON.stringify(updatedData), (err) => {
+                if (err) {
+                    throw new Error('soemthing wrong while deleting')
+                }
+                else {
+                   res.send({data:updatedData,success:true,message:"user updated sucessfully"})
+                }
+            })
+        }
+    })
+}
+
+module.exports = { homeController, aboutController, contactController, userController, contactPostController, allDataController, searchController, deleteController, singleController, updateController }

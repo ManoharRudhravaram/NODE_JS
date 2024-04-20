@@ -8,6 +8,7 @@
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <title>users page</title>
     <link rel="stylesheet" href="./css/allUser.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body>
@@ -65,8 +66,8 @@
                 </table>
             </div>
         </div>
-        <div class="row" >
-            <div class="col-md d-flex align-items-center justify-content-center" id="body" >
+        <div class="row">
+            <div class="col-md d-flex align-items-center justify-content-center" id="body">
 
             </div>
         </div>
@@ -77,10 +78,8 @@
     let tbody = document.getElementById('tbody')
     let total = document.getElementById('total')
     let search = document.getElementById('search')
-    let body=document.getElementById('body')
-    let str='<div style="width:100%;border:1px solid;height:80vh;position:relative;top:-230px;background-color:rgba(0,0,0,0.6)" class="d-flex align-items-center justify-content-center"><div class=" m-5 d-flex align-items-center justify-content-center flex-column border p-5 bg-warning" style="width:30%"><input type="text" id="text" placeholder=" enter name" style="width:12rem"> <br><input type="email" id="email" style="width:12rem" placeholder=" enter email"> <br><buttom class="btn btn-primary" id="btn">submit</buttom></div></div>'
-    let email=document.getElementById("email")
-    let text=document.getElementById("text")
+    let body = document.getElementById('body')
+
     search.addEventListener('keyup', async () => {
         if (search.value) {
             let url = `http://localhost:8000/search?search=${search.value}`
@@ -108,25 +107,54 @@
         total.innerText = data.length;
     }
 
-    async function editHandler(id){
-    body.innerHTML=str
-        let response=await fetch(`http://localhost:8000/single/${id}`,{method:"GET",headers:{"content-type":"application/json"}})
-        let {data}=await response.json()
-        email.value=data.email;
-        text.value=data.text;
+    async function editHandler(id) {
+        let response = await fetch(`http://localhost:8000/single/${id}`, { method: "GET", headers: { "content-type": "application/json" } })
+        let { data } = await response.json()
+        let { email, text } = await data;
+        let str = `<div style="width:100%;border:1px solid;height:80vh;position:relative;top:-300px;background-color:rgba(0,0,0,0.6)" class="d-flex align-items-center justify-content-center"><i class="fa-solid fa-xmark" style="position:absolute;top:10px;right:10px;font-size:25px;color:white;cursor:pointer"></i><div class=" m-5 d-flex align-items-center justify-content-center flex-column border p-5 bg-warning" style="width:30%"><input type="text" id="text" placeholder=" enter name" style="width:12rem" value='${text}'> <br><input type="email" id="email" style="width:12rem" placeholder=" enter email" value='${email}'> <br><buttom class="btn btn-primary" id="btn" onclick="submitHandler(${id})">submit</buttom></div></div>`
+        body.innerHTML = str
+        let cross=document.querySelector('i')
+        cross.addEventListener('click',()=>{
+            body.innerHTML = ''
+        })
     }
-    async function deleteHandler(id){
-       let response=await fetch(`http://localhost:8000/delete/${id}`,{method:"DELETE",headers:{"content-type":"application/json"}})
-       let {data,success}=await response.json()
-       if(success){
-        print(data)
-       }
+
+    async function submitHandler(id) {
+        let updatedText = document.getElementById('text').value;
+        let updatedEmail = document.getElementById('email').value;
+        let updateddata = { text: updatedText, email: updatedEmail };
+        try {
+            let response = await fetch(`http://localhost:8000/update/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(updateddata)
+            });
+            let { data, success, message } = await response.json()
+            if (success) {
+                print(data)
+                alert(message)
+                body.innerHTML = ''
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+
+    async function deleteHandler(id) {
+        let response = await fetch(`http://localhost:8000/delete/${id}`, { method: "DELETE", headers: { "content-type": "application/json" } })
+        let { data, success, message } = await response.json()
+        if (success) {
+            print(data)
+            alert(message)
+        }
     }
 
     async function allUsersData() {
         let response = await fetch('/users')
-        let { data,success } = await response.json()
-        if(success){
+        let { data, success } = await response.json()
+        if (success) {
             print(data)
         }
     }
