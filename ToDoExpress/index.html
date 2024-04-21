@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            background-color: cyan;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        input {
+            width: 15rem;
+            height: 2rem;
+        }
+
+        #input-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        button {
+            padding: 8px;
+            color: white;
+            border-radius: 5px;
+        }
+
+        #btn {
+            background-color: blue;
+        }
+
+        #edit {
+            background-color: yellow;
+            color: black;
+        }
+
+        #delete {
+            background-color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>To do list</h1>
+    <div id="input-body">
+        <input type="task" placeholder="enter task" id="task">
+        <button id="btn">Submit</button>
+    </div>
+    <div id="body" style="display: flex;flex-wrap: wrap;gap: 10px">
+
+    </div>
+</body>
+<script>
+    let globalData = [];
+    let action = ""
+    let btn = document.getElementById("btn")
+    let task = document.getElementById('task')
+    btn.addEventListener("click", async () => {
+        if (!task.value) {
+            alert("task is required**")
+        }
+        else {
+            if (!action) {
+                try {
+                    let response = await fetch('http://localhost:8000', { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ task: task.value }) })
+                    let { data, message, success } = await response.json()
+                    if (success) {
+                        alert(message)
+                        Print(data)
+                        task.value = ""
+                    }
+                } catch (error) {
+                    alert(error.message);
+                }
+            }
+            else {
+                try {
+                    let response = await fetch('http://localhost:8000', { method: "PuT", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...action, task: task.value }) })
+                    let { data, message, success } = await response.json()
+                    if (success) {
+                        alert(message)
+                        Print(data)
+                        task.value = ""
+                        action = ""
+                        btn.innerText = "Submit"
+                        btn.style.backgroundColor = 'blue'
+                        btn.style.color = 'white'
+                    }
+                } catch (error) {
+                    alert(error.message);
+                }
+            }
+        }
+    })
+
+
+    function Print(data) {
+        globalData = data;
+        let str = ''
+        data.forEach(({ task, id }) => {
+            str += `<div style="margin-top: 10px;border:1px solid;display: flex;flex-direction: column;justify-content: space-evenly;align-items: center;width:15vw;padding:5px"><h4>${task}</h4><div style="display: flex;justify-content: space-evenly;gap: 10px;"><button id='edit' onclick="editHandler(${id})">Edit</button><button id='delete' onclick="deleteHandler(${id})">Delete</button></div></div>`
+        })
+        document.getElementById("body").innerHTML = str;
+    }
+
+    async function editHandler(id) {
+        let findData = globalData.find(item => item.id == id)
+        btn.innerText = "EDIT";
+        btn.style.backgroundColor = 'yellow'
+        btn.style.color = 'black'
+        action = findData;
+        task.value = findData.task;
+    }
+
+    async function deleteHandler(id) {
+        try {
+            let response = await fetch('http://localhost:8000', { method: "DELETE", headers: { "content-type": "application/json" }, body: JSON.stringify({ id }) })
+            let { success, data, message } = await response.json()
+            if (success) {
+                alert(message)
+                Print(data)
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+</script>
+
+</html>
