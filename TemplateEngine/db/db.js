@@ -1,0 +1,1 @@
+[{"id":693,"name":"E","subject":"php","rating":"3.5"},{"id":943,"name":"D","subject":"Devops","rating":"3"},{"id":936,"name":"C","subject":"PYTHON","rating":"5"},{"id":771,"name":"B","subject":"JAVA","rating":"4"},{"id":922,"name":"A","subject":"MERN","rating":"5"}]

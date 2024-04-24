@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <%- include('../partials/head') %>
+</head>
+
+<body>
+    <%- include('../partials/nav') %>
+        <div class="container">
+            <div class="row">
+                <div class="col-md">
+                    <h1>
+                        <%= title%> page
+                    </h1>
+                    <div class="col-md">
+                        <input type="text" placeholder="enter name" name="name" id="name"> <br> <br>
+                        <input type="text" placeholder="enter subject" name="subject" id="subject"> <br> <br>
+                        <input type="text" placeholder="enter rating" name="rating" id="rating"> <br> <br>
+                        <button class="btn btn-primary" id="btn">submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+</body>
+<script>
+    document.getElementById("btn").addEventListener("click", async () => {
+        let name = document.getElementById('name').value;
+        let subject = document.getElementById('subject').value;
+        let rating = document.getElementById('rating').value;
+        if (!name || !subject || !rating) {
+            alert("required**")
+        }
+        else {
+            try {
+                let response = await fetch("http://localhost:8000/service", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ name, subject, rating }) });
+                let { message, success } = await response.json()
+                if (success) {
+                    alert(message)
+                    window.location.href = '/trainers'
+                    document.getElementById('name').value = ""; // Clear name field
+                    document.getElementById('subject').value = ""; // Clear subject field
+                    document.getElementById('rating').value = "";
+                }
+            } catch (error) {
+                alert(error)
+            }
+        }
+    })
+</script>
+<%- include('../partials/script') %>
+
+</html>

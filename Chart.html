@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+</script>
+<script>
+    const arr=[{id:1,name:"A",rating:4},{id:2,name:"B",rating:3.5},{id:3,name:"C",rating:4.5},{id:4,name:"D",rating:4.1},{id:5,name:"E",rating:3.1}]
+    const xValues = arr.map(e=>e.name)
+    const yValues = arr.map(e=>e.rating)
+    const barColors = ["red", "green", "blue", "orange", "brown"];
+
+    const myChart = new Chart("myChart", {
+        type: "bar",
+        data: {
+            labels: xValues,
+            datasets: [{
+                backgroundColor: barColors,
+                data: yValues
+            }]
+        },
+        options: {
+            title: {
+                display: true,
+                text: "Product Rating"
+            }
+        }
+    });
+</script>
+</html>
